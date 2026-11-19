@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CRISPR–Cas Editing in Human Ex Vivo Organs</title>
+
+<!-- Fonts: Bodoni Moda (display) + DM Sans (body) — Notebook Tabs preset -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;0,6..96,700;1,6..96,400;1,6..96,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet" />
+
+<style>
+/* ===========================================
+   CSS CUSTOM PROPERTIES (THEME)
+   Notebook Tabs: cream paper card on charcoal, pastel section tabs.
+   Change these to re-theme the whole deck.
+   =========================================== */
+:root {
+  --bg-outer: #2d2d2d;
+  --bg-page: #f8f6f1;
+  --bg-sunk: #efebe2;          /* slightly darker paper for panels */
+  --ink: #1a1a1a;
+  --muted: #6b675f;
+  --hair: rgba(26, 26, 26, 0.14);
+
+  /* Section tab colors */
+  --tab-bg: #98d4bb;           /* Background — mint */
+  --tab-reg: #c7b8ea;          /* Regulation — lavender */
+  --tab-safe: #f4b8c5;         /* Safety — pink */
+  --tab-eth: #a8d8ea;          /* Ethics — sky */
+  --tab-cream: #ffe6a7;
+
+  --font-display: "Bodoni Moda", Georgia, serif;
+  --font-body: "DM Sans", sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-normal: 0.9s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   VIEWPORT FITTING: MANDATORY BASE STYLES
+   (full contents of viewport-base.css)
+   =========================================== */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+.slide {
+  width: 100vw; height: 100vh; height: 100dvh;
+  overflow: hidden; scroll-snap-align: start;
+  display: flex; flex-direction: column; position: relative;
+}
+.slide-content {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  max-height: 100%; overflow: hidden; padding: var(--slide-padding);
+}
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.4; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+@media (max-height: 700px) {
+  :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); }
+}
+@media (max-height: 600px) {
+  :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+  .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+  :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+}
+@media (max-width: 600px) {
+  :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+  .grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   DECK-SPECIFIC TYPE SCALE
+   Overrides the base scale for this style (all clamp()).
+   =========================================== */
+:root {
+  --title-size: clamp(2rem, 6vw, 5.6rem);
+  --h2-size: clamp(1.4rem, 3.4vw, 3rem);
+  --q-size: clamp(1.5rem, 3.8vw, 3.6rem);
+  --body-size: clamp(0.8rem, 1.35vw, 1.15rem);
+  --kicker-size: clamp(0.6rem, 0.95vw, 0.8rem);
+}
+
+body { background: var(--bg-outer); color: var(--ink); font-family: var(--font-body); }
+
+/* ===========================================
+   PAPER PAGE + BINDER HOLES + SECTION TABS
+   Every slide is a cream "notebook page" on charcoal.
+   =========================================== */
+.slide { align-items: center; justify-content: center; padding: clamp(0.6rem, 3.5vh, 2.6rem) clamp(2.2rem, 4.5vw, 4rem) clamp(0.6rem, 3.5vh, 2.6rem) clamp(0.6rem, 3vw, 3rem); }
+.page {
+  position: relative; width: min(100%, 1440px); height: 100%;
+  background: var(--bg-page); border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  padding: clamp(1rem, 6vh, 4.2rem) clamp(2.4rem, 7vw, 7rem) clamp(1rem, 5vh, 3.6rem) clamp(3rem, 8vw, 7.5rem);
+  display: flex; flex-direction: column; gap: clamp(0.5rem, 2.2vh, 1.5rem);
+}
+/* Binder holes, left edge */
+.holes { position: absolute; left: clamp(0.8rem, 2.2vw, 2rem); top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: space-evenly; }
+.holes span { width: clamp(9px, 1.2vw, 16px); aspect-ratio: 1; border-radius: 50%; background: var(--bg-outer); opacity: 0.85; }
+/* Section tabs, right edge (built by JS; the active section sticks out further) */
+.tabs { position: absolute; right: calc(-1 * clamp(24px, 2.6vw, 38px)); top: 10%; display: flex; flex-direction: column; gap: 6px; }
+.tab {
+  width: clamp(24px, 2.6vw, 38px); height: clamp(60px, 13vh, 120px);
+  border-radius: 0 6px 6px 0; writing-mode: vertical-rl;
+  font: 500 clamp(0.5rem, 1vh, 0.7rem) var(--font-body); letter-spacing: 0.12em; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center; color: var(--ink);
+  opacity: 0.9; filter: saturate(0.6); transform-origin: left; transition: opacity 0.4s, transform 0.4s var(--ease-out-expo);
+}
+.tab.on { opacity: 1; filter: none; transform: scaleX(1.4); box-shadow: 2px 2px 8px rgba(0,0,0,.25); }
+
+/* Page chrome: section label (top) + page number (bottom-right) */
+.chrome { display: flex; justify-content: space-between; align-items: center; font: 500 var(--kicker-size) var(--font-body); letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); padding-bottom: clamp(0.3rem, 1vh, 0.7rem); border-bottom: 1px solid var(--hair); }
+.chrome .dot { display: inline-block; width: 0.7em; height: 0.7em; border-radius: 50%; margin-right: 0.6em; vertical-align: -0.05em; }
+.body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: clamp(0.5rem, 2.4vh, 1.6rem); }
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+.kicker { font: 500 var(--kicker-size) var(--font-body); letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 400 var(--title-size)/1.02 var(--font-display); max-width: 16ch; }
+h2 { font: 400 var(--h2-size)/1.08 var(--font-display); max-width: 24ch; }
+h1 em, h2 em, .q em { font-style: italic; }
+.lead { font: 400 calc(var(--body-size) * 1.15)/1.55 var(--font-body); color: var(--muted); max-width: 58ch; }
+p, li { font-size: var(--body-size); line-height: 1.5; }
+.rule { width: clamp(50px, 7vw, 110px); height: 2px; background: var(--ink); }
+.hl { padding: 0 0.15em; background: linear-gradient(transparent 58%, var(--mark, var(--tab-cream)) 58%); }
+small, .cite { font-size: var(--small-size); color: var(--muted); }
+
+/* ===========================================
+   COMPONENTS
+   =========================================== */
+/* Two-column panels */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.8rem, 2.5vw, 2.4rem); min-height: 0; }
+.panel { background: var(--bg-sunk); border-radius: 4px; padding: clamp(0.8rem, 2.6vh, 1.8rem) clamp(0.9rem, 2vw, 1.8rem); display: flex; flex-direction: column; gap: clamp(0.4rem, 1.4vh, 0.9rem); border-top: 4px solid var(--accent-c, var(--ink)); }
+.panel h3 { font: 600 var(--h3-size)/1.15 var(--font-display); }
+.panel ul { list-style: none; display: flex; flex-direction: column; gap: clamp(0.3rem, 1vh, 0.6rem); }
+.panel li { padding-left: 1.1em; position: relative; }
+.panel li::before { content: "—"; position: absolute; left: 0; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5em; }
+.chip { font: 700 var(--small-size) var(--font-body); letter-spacing: 0.06em; padding: 0.35em 0.8em; border-radius: 999px; background: var(--bg-page); border: 1px solid var(--hair); }
+.chip span { font-weight: 400; color: var(--muted); }
+
+/* Flow diagram (rejection pathway) */
+.flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; gap: clamp(0.4rem, 1.2vw, 1rem); }
+.step { background: var(--bg-sunk); border-radius: 4px; padding: clamp(0.7rem, 2.4vh, 1.6rem) clamp(0.7rem, 1.4vw, 1.3rem); display: flex; flex-direction: column; gap: 0.4em; }
+.step .n { font: 600 italic clamp(1.4rem, 3vw, 2.6rem)/1 var(--font-display); color: var(--muted); }
+.step b { font: 600 var(--h3-size)/1.15 var(--font-display); }
+.arrow { align-self: center; font: 400 clamp(1.2rem, 2.4vw, 2rem) var(--font-display); color: var(--muted); }
+.callout { display: flex; gap: clamp(0.6rem, 1.5vw, 1.2rem); align-items: baseline; padding: clamp(0.6rem, 2vh, 1.2rem) clamp(0.8rem, 1.6vw, 1.4rem); border-left: 4px solid var(--accent-c, var(--ink)); background: var(--bg-sunk); }
+.callout .kicker { white-space: nowrap; }
+
+/* Regulation comparison table with the big "?" */
+.table-wrap { position: relative; min-height: 0; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+th, td { text-align: left; vertical-align: top; padding: clamp(0.4rem, 1.5vh, 0.9rem) clamp(0.5rem, 1.2vw, 1.1rem); border-bottom: 1px solid var(--hair); font-size: var(--body-size); line-height: 1.4; }
+th { font: 600 var(--h3-size)/1.15 var(--font-display); border-bottom: 2px solid var(--ink); }
+th:first-child, td:first-child { width: 18%; font: 500 var(--kicker-size) var(--font-body); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); padding-top: clamp(0.55rem, 1.8vh, 1.05rem); }
+th.col-a { background: linear-gradient(transparent 70%, var(--tab-bg) 70%); background-size: 100% 100%; }
+th.gap, td.gap { width: 12%; border-bottom: 0; padding: 0; }
+.bigq {
+  position: absolute; left: calc(18% + 35% + 6%); top: 50%; transform: translate(-50%, -50%);
+  font: 600 italic clamp(4rem, 13vw, 11.5rem)/1 var(--font-display);
+  color: #9b87d4; pointer-events: none; z-index: 2;
+}
+table { position: relative; z-index: 1; }
+.cfr { font-variant-numeric: lining-nums; white-space: nowrap; }
+
+/* Question slides */
+.q-slide .body { align-items: flex-start; }
+.qnum { font: 600 italic clamp(3rem, 9vw, 8rem)/0.9 var(--font-display); color: var(--accent-c, var(--tab-reg)); }
+.q { font: 400 var(--q-size)/1.12 var(--font-display); max-width: 22ch; }
+.prompt { display: inline-flex; gap: 0.6em; align-items: center; font: 500 var(--body-size) var(--font-body); padding: 0.5em 1em; border: 1px dashed var(--muted); border-radius: 999px; color: var(--muted); }
+
+/* Stats row (islets) */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 2px solid var(--ink); border-bottom: 1px solid var(--hair); }
+.stat { padding: clamp(0.7rem, 3vh, 2rem) clamp(0.6rem, 1.6vw, 1.6rem); display: flex; flex-direction: column; gap: 0.5em; border-right: 1px solid var(--hair); }
+.stat:last-child { border-right: 0; }
+.stat .v { font: 400 clamp(2.2rem, 6vw, 5.4rem)/1 var(--font-display); }
+.stat .v em { font-style: italic; }
+.stat p { color: var(--muted); max-width: 26ch; }
+
+/* Scale / balance slide */
+.big-num { font: 400 clamp(2.6rem, 7vw, 6rem)/1 var(--font-display); }
+
+/* Figure slide */
+.figure { background: #fff; border-radius: 4px; padding: clamp(0.5rem, 2vh, 1.4rem) clamp(0.6rem, 2vw, 1.6rem); box-shadow: 0 2px 0 var(--hair); display: flex; flex-direction: column; align-items: center; gap: clamp(0.3rem, 1vh, 0.6rem); min-height: 0; }
+.figure img { width: 100%; max-height: min(52vh, 460px); object-fit: contain; }
+.figure figcaption { align-self: flex-start; font-size: var(--small-size); color: var(--muted); }
+
+/* Numbered risk list */
+.risks { list-style: none; display: grid; gap: clamp(0.5rem, 2vh, 1.2rem); counter-reset: r; }
+.risks > li { display: grid; grid-template-columns: clamp(2.2rem, 4.5vw, 4rem) 1fr; gap: clamp(0.5rem, 1.4vw, 1.2rem); align-items: start; padding-bottom: clamp(0.4rem, 1.6vh, 1rem); border-bottom: 1px solid var(--hair); }
+.risks > li:last-child { border-bottom: 0; }
+.risks > li::before { counter-increment: r; content: counter(r, decimal-leading-zero); font: 600 italic clamp(1.4rem, 3vw, 2.6rem)/1 var(--font-display); color: #c8798a; }
+.risks b { font: 600 var(--h3-size)/1.2 var(--font-display); display: block; margin-bottom: 0.2em; }
+.risks .fix { display: inline-block; margin-top: 0.4em; font-size: var(--small-size); padding: 0.25em 0.7em; border-radius: 999px; background: var(--bg-sunk); }
+
+/* Timeline: 12 h editing vs. 8–18 h viability */
+.timeline { position: relative; margin: 0.5em 0 1.3em; height: clamp(2.6rem, 7.5vh, 3.8rem); max-width: 46rem; }
+.timeline .axis { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--ink); }
+.timeline .win, .timeline .edit { display: flex; align-items: center; padding-left: 0.5em; font: 500 clamp(0.55rem, 0.85vw, 0.72rem) var(--font-body); color: var(--ink); white-space: nowrap; }
+.timeline .win { position: absolute; top: 0; height: 46%; left: calc(8 / 20 * 100%); width: calc(10 / 20 * 100%); background: var(--tab-bg); border-radius: 2px; }
+.timeline .edit { position: absolute; top: 50%; height: 46%; left: 0; width: calc(12 / 20 * 100%); background: var(--tab-safe); border-radius: 2px; }
+.timeline .lab { position: absolute; font-size: clamp(0.55rem, 0.85vw, 0.72rem); color: var(--muted); white-space: nowrap; }
+.timeline .tick { position: absolute; bottom: -1.3em; font-size: clamp(0.55rem, 0.8vw, 0.7rem); color: var(--muted); transform: translateX(-50%); }
+
+/* Title slide */
+.title-slide .body { gap: clamp(0.8rem, 2.8vh, 1.8rem); }
+.sections { display: flex; flex-wrap: wrap; gap: clamp(0.4rem, 1vw, 0.8rem); }
+.sections span { font: 500 var(--small-size) var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; padding: 0.4em 0.9em; border-radius: 999px; }
+
+/* Page number */
+.pnum { position: absolute; right: clamp(1.2rem, 3vw, 2.6rem); bottom: clamp(0.6rem, 2.4vh, 1.6rem); font: 500 var(--kicker-size) var(--font-body); letter-spacing: 0.16em; color: var(--muted); }
+
+/* ===========================================
+   ANIMATIONS — calm, slow fades with stagger
+   .visible is added to a slide by IntersectionObserver.
+   =========================================== */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+.slide.visible .reveal { opacity: 1; transform: none; }
+.reveal.d1 { transition-delay: 0.12s; } .reveal.d2 { transition-delay: 0.26s; } .reveal.d3 { transition-delay: 0.4s; } .reveal.d4 { transition-delay: 0.54s; } .reveal.d5 { transition-delay: 0.68s; }
+.bigq { opacity: 0; transition: opacity 1.4s ease 0.5s, transform 1.4s var(--ease-out-expo) 0.5s; transform: translate(-50%, -42%); }
+.slide.visible .bigq { opacity: 1; transform: translate(-50%, -50%); }
+
+/* ===========================================
+   NAVIGATION: progress bar + dots
+   =========================================== */
+.progress-bar { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--tab-cream); z-index: 100; transition: width 0.3s; }
+.nav-dots { position: fixed; left: 50%; bottom: clamp(0.2rem, 1vh, 0.6rem); transform: translateX(-50%); display: flex; gap: 6px; z-index: 100; }
+.nav-dots button { width: 6px; height: 6px; border-radius: 50%; border: 0; padding: 0; background: rgba(255, 255, 255, 0.3); cursor: pointer; transition: transform 0.3s, background 0.3s; }
+.nav-dots button.active { background: #fff; transform: scale(1.5); }
+
+/* ===========================================
+   SMALL / NARROW VIEWPORTS
+   =========================================== */
+@media (max-height: 600px) {
+  .holes { display: none; }
+  .lead { display: none; }
+  .tab { height: clamp(40px, 11vh, 70px); }
+}
+@media (max-width: 760px) {
+  .cols, .stats { grid-template-columns: 1fr; }
+  .flow { grid-template-columns: 1fr; }
+  .flow .arrow { transform: rotate(90deg); justify-self: center; }
+  .stat { border-right: 0; border-bottom: 1px solid var(--hair); }
+  .bigq { font-size: clamp(4rem, 30vw, 8rem); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" aria-hidden="true"></div>
+<nav class="nav-dots" aria-label="Slide navigation"></nav>
+
+<main>
+
+<!-- =========================================================
+     SLIDE 01 · TITLE
+     ========================================================= -->
+<section class="slide title-slide" data-section="">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">JHU Dev Gen Lab · Lab 10 · Ethics of CRISPR Editing</p>
+      <h1 class="reveal d1">CRISPR–Cas Editing in <em>Human Ex Vivo</em> Organs</h1>
+      <div class="rule reveal d2"></div>
+      <p class="lead reveal d3">Editing a donor liver before transplant: the science, the rules, the risks, and the questions.</p>
+      <div class="sections reveal d4">
+        <span style="background: var(--tab-bg)">Background</span>
+        <span style="background: var(--tab-reg)">Regulation</span>
+        <span style="background: var(--tab-safe)">Safety</span>
+        <span style="background: var(--tab-eth)">Ethics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 02 · BACKGROUND — why organs get rejected
+     ========================================================= -->
+<section class="slide" data-section="bg">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">The problem</p>
+      <h2 class="reveal d1">Transplants fail when the immune system sees the donor as <em>foreign</em>.</h2>
+      <div class="flow reveal d2">
+        <div class="step"><span class="n">i</span><b>Donor HLA</b><p>Human leukocyte antigen molecules on every donor cell</p></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="n">ii</span><b>Immune recognition</b><p>Recipient T cells flag donor HLA as foreign</p></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="n">iii</span><b>Rejection</b><p>The immune system attacks the graft</p></div>
+      </div>
+      <div class="callout reveal d3" style="--accent-c: var(--tab-bg)">
+        <span class="kicker">Current therapy</span>
+        <p>Immunosuppressive drugs, which carry <span class="hl" style="--mark: var(--tab-bg)">significant risks</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 03 · BACKGROUND — evidence + the clinical trial
+     ========================================================= -->
+<section class="slide" data-section="bg">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">The idea</p>
+      <h2 class="reveal d1">Remove the HLA, and the organ becomes harder to <em>see</em>.</h2>
+      <div class="cols">
+        <div class="panel reveal d2" style="--accent-c: var(--tab-bg)">
+          <span class="kicker">Preclinical research</span>
+          <h3>Cells with HLA knocked out</h3>
+          <div class="chips"><span class="chip">HLA-A</span><span class="chip">HLA-B</span><span class="chip">HLA-DR</span></div>
+          <ul>
+            <li>Little to no T-cell proliferation</li>
+            <li>Greatly reduced immunogenicity</li>
+          </ul>
+        </div>
+        <div class="panel reveal d3" style="--accent-c: var(--ink)">
+          <span class="kicker">Current clinical trial</span>
+          <h3>Gene-editing of donor livers ex vivo</h3>
+          <ul>
+            <li>Deceased donor livers undergo CRISPR–Cas9 editing before transplantation</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">HLA-A <span>class I</span></span>
+            <span class="chip">HLA-B <span>class I</span></span>
+            <span class="chip">CIITA <span>class II transactivator</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 04 · REGULATION — the jurisdictional gap (table + "?")
+     Speaker: "Same organ, same donor, same patient" — slow down.
+     Say the CFR number out loud once rather than reading it.
+     ========================================================= -->
+<section class="slide" data-section="reg">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">Same organ · Same donor · Same patient</p>
+      <h2 class="reveal d1">One edit moves it between two <em>separate federal systems</em>.</h2>
+      <div class="table-wrap reveal d2">
+        <div class="bigq" aria-hidden="true">?</div>
+        <table>
+          <thead>
+            <tr><th></th><th class="col-a">Unedited organs</th><th class="gap"></th><th class="col-b" style="background: linear-gradient(transparent 70%, var(--tab-reg) 70%)">CRISPR-edited organs</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Regulator</td><td>OPTN / HRSA</td><td class="gap"></td><td class="col-b">FDA (CBER)</td></tr>
+            <tr><td>Legal basis</td><td><span class="cfr">21 CFR 1271.3(d)(1)</span>: organs excluded from FDA tissue rules</td><td class="gap"></td><td class="col-b">Jan 2024 FDA genome editing guidance</td></tr>
+            <tr><td>Approval</td><td>None</td><td class="gap"></td><td class="col-b">IND, Phase 1/2 trial</td></tr>
+            <tr><td>Allocated by</td><td>Medical need</td><td class="gap"></td><td class="col-b">Trial enrollment criteria</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 05 · REGULATION — Question 1
+     Speaker: take ~20 s of answers. If nobody answers in five
+     seconds, offer the binary: "show of hands — organ, or drug?"
+     ========================================================= -->
+<section class="slide q-slide" data-section="reg">
+  <div class="page">
+    <div class="body">
+      <span class="qnum reveal" style="--accent-c: var(--tab-reg)">Q1</span>
+      <p class="kicker reveal d1">So where should the line sit?</p>
+      <p class="q reveal d2">Does one edit turn an organ into a <em>drug</em>?</p>
+      <span class="prompt reveal d3">✋ Show of hands: organ, or drug?</span>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 06 · REGULATION — the islet precedent
+     ========================================================= -->
+<section class="slide" data-section="reg">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">Precedent · Pancreatic islets</p>
+      <h2 class="reveal d1">We already know what happens when the line is <em>wrong</em>.</h2>
+      <div class="stats reveal d2">
+        <div class="stat"><span class="v"><em>Drug</em></span><p>FDA classified islets from deceased donors as a biologic drug, not an organ</p></div>
+        <div class="stat"><span class="v">2023</span><p>FDA approved the first islet product</p></div>
+        <div class="stat"><span class="v">1</span><p>publicly reported use since approval</p></div>
+      </div>
+      <p class="lead reveal d3">The pathway was so demanding that the therapy effectively never reached patients.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 07 · REGULATION — stakes in both directions
+     ========================================================= -->
+<section class="slide" data-section="reg">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">The stakes are real</p>
+      <h2 class="reveal d1">Getting it wrong cuts <em>both ways</em>.</h2>
+      <div class="cols">
+        <div class="panel reveal d2" style="--accent-c: var(--tab-safe)">
+          <span class="kicker">Under-regulate</span>
+          <h3>Experimental edits go into people who are already desperate.</h3>
+        </div>
+        <div class="panel reveal d3" style="--accent-c: var(--tab-reg)">
+          <span class="kicker">Over-regulate</span>
+          <span class="big-num">28,000</span>
+          <p>organs a year keep getting discarded while the fix sits unused.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 08 · REGULATION — the private LLC
+     ========================================================= -->
+<section class="slide" data-section="reg">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">One more thing</p>
+      <h2 class="reveal d1" style="max-width: 20ch">The first liver trial is run by a <span class="hl" style="--mark: var(--tab-reg)"><em>private LLC</em></span>.</h2>
+      <div class="rule reveal d2"></div>
+      <p class="lead reveal d3">Our manual makes the point: federally funded researchers face restrictions that private ones don’t.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 09 · REGULATION — Question 2
+     ========================================================= -->
+<section class="slide q-slide" data-section="reg">
+  <div class="page">
+    <div class="body">
+      <span class="qnum reveal" style="--accent-c: var(--tab-reg)">Q2</span>
+      <p class="kicker reveal d1">The donor consented to donation. Nobody asked them about genetic modification.</p>
+      <p class="q reveal d2">Who should consent, and which agency should <em>enforce</em> it?</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 10 · SAFETY — how ex vivo editing works (figure)
+     Speaker: point at the "37 °C, 12 hr" label — it's the
+     source of Safety risk 03.
+     ========================================================= -->
+<section class="slide" data-section="safe">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">How it works</p>
+      <h2 class="reveal d1" style="max-width: 30ch">Editing happens on the pump, <em>before</em> transplant.</h2>
+      <figure class="figure reveal d2">
+        <img src="assets/fig1-exvivo-perfusion-crispr.png" alt="Schematic: donor organ, then machine perfusion with CRISPR–Cas in perfusate at 37 °C for 12 hours (callout: programmable RNA knockdown), then treated graft, then transplantation into a recipient." />
+        <figcaption>Adapted from Rananaware et al., <em>Nat Rev Bioeng</em> <b>4</b>, 710–712 (2026), Fig. 1.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDE 11 · SAFETY — three risks
+     ========================================================= -->
+<section class="slide" data-section="safe">
+  <div class="page">
+    <div class="body">
+      <p class="kicker reveal">Safety</p>
+      <h2 class="reveal d1">Three ways it could go <em>wrong</em>.</h2>
+      <ol class="risks">
+        <li class="reveal d2"><div><b>Natural killer cell attack</b><p>Without HLA, natural killer cells attack the organ’s own cells.</p><span class="fix">Fix: retain HLA-C to avoid both T-cell rejection and NK attack</span></div></li>
+        <li class="reveal d3"><div><b>Off-target edits</b><p>Long-term cancer risk from edits in oncogenes or tumor suppressors.</p></div></li>
+        <li class="reveal d4"><div><b>Organ viability</b><p>Editing takes 12 hrs; the liver must be delivered within 8–18 hrs of removal.</p>
+          <div class="timeline" aria-label="Timeline: editing takes 12 hours; liver viability window is 8 to 18 hours">
+            <div class="win">liver viability window: 8–18 h</div><div class="edit">CRISPR editing: 12 h</div><div class="axis"></div>
+            <span class="tick" style="left: 0">0 h</span><span class="tick" style="left: 40%">8 h</span><span class="tick" style="left: 60%">12 h</span><span class="tick" style="left: 90%">18 h</span>
+          </div>
+        </div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SLIDES 12–15 · ETHICS — one question per slide
+     ========================================================= -->
+<section class="slide q-slide" data-section="eth">
+  <div class="page">
+    <div class="body">
+      <span class="qnum reveal" style="--accent-c: var(--tab-eth)">01</span>
+      <p class="kicker reveal d1">Ethics · Access</p>
+      <p class="q reveal d2" style="max-width: 28ch">Could the high cost of CRISPR editing create a <em>two-tiered</em> transplant system, where access depends on socioeconomic status rather than medical need?</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide q-slide" data-section="eth">
+  <div class="page">
+    <div class="body">
+      <span class="qnum reveal" style="--accent-c: var(--tab-eth)">02</span>
+      <p class="kicker reveal d1">Ethics · Voluntariness</p>
+      <p class="q reveal d2" style="max-width: 28ch">If an experimental, genetically modified organ is a patient’s <em>“only chance,”</em> can their consent truly be voluntary and informed?</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide q-slide" data-section="eth">
+  <div class="page">
+    <div class="body">
+      <span class="qnum reveal" style="--accent-c: var(--tab-eth)">03</span>
+      <p class="kicker reveal d1">Ethics · The unknown</p>
+      <p class="q reveal d2" style="max-width: 28ch">Can consent ever be sufficiently informed when the off-target and long-term effects are <em>unknown</em> even to researchers?</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide q-slide" data-section="eth">
+  <div class="page">
+    <div class="body">
+      <span class="qnum reveal" style="--accent-c: var(--tab-eth)">04</span>
+      <p class="kicker reveal d1">Ethics · Donor families</p>
+      <p class="q reveal d2" style="max-width: 28ch">Should families of deceased donors have a say in whether donated organs undergo <em>experimental</em> genetic modification?</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ===========================================
+   PAGE DECORATION
+   Adds binder holes, section tabs, a section chrome label and a
+   page number to every .page, driven by the slide's data-section.
+   =========================================== */
+const SECTIONS = [
+  { key: "bg",   label: "Background", color: "var(--tab-bg)" },
+  { key: "reg",  label: "Regulation", color: "var(--tab-reg)" },
+  { key: "safe", label: "Safety",     color: "var(--tab-safe)" },
+  { key: "eth",  label: "Ethics",     color: "var(--tab-eth)" },
+];
+const allSlides = document.querySelectorAll(".slide");
+allSlides.forEach((slide, i) => {
+  const page = slide.querySelector(".page");
+  const sec = slide.dataset.section;
+
+  const holes = document.createElement("div");
+  holes.className = "holes decorative";
+  holes.innerHTML = "<span></span>".repeat(5);
+  page.prepend(holes);
+
+  const tabs = document.createElement("div");
+  tabs.className = "tabs";
+  tabs.innerHTML = SECTIONS.map(s =>
+    `<div class="tab${s.key === sec ? " on" : ""}" style="background:${s.color}">${s.label}</div>`).join("");
+  page.appendChild(tabs);
+
+  if (sec) {
+    const s = SECTIONS.find(x => x.key === sec);
+    const chrome = document.createElement("div");
+    chrome.className = "chrome";
+    chrome.innerHTML = `<span><span class="dot" style="background:${s.color}"></span>${s.label}</span><span>Ex Vivo Organ Editing</span>`;
+    holes.after(chrome);
+  }
+
+  const num = document.createElement("span");
+  num.className = "pnum";
+  num.textContent = String(i + 1).padStart(2, "0") + " / " + String(allSlides.length).padStart(2, "0");
+  page.appendChild(num);
+});
+
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   Keyboard, wheel, touch (native scroll-snap), progress bar, nav dots,
+   and IntersectionObserver-driven .visible for reveal animations.
+   =========================================== */
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll(".slide"));
+    this.currentSlide = 0;
+    this.navDotsContainer = document.querySelector(".nav-dots");
+    this.progressBar = document.querySelector(".progress-bar");
+    this.setupIntersectionObserver();
+    this.setupKeyboardNav();
+    this.setupWheelNav();
+    this.setupTouchNav();
+    this.setupNavDots();
+    this.updateProgress();
+  }
+
+  setupIntersectionObserver() {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add("visible");
+          this.currentSlide = this.slides.indexOf(e.target);
+          this.updateProgress();
+        }
+      });
+    }, { threshold: 0.55 });
+    this.slides.forEach(s => io.observe(s));
+  }
+
+  goTo(i) {
+    i = Math.max(0, Math.min(this.slides.length - 1, i));
+    this.slides[i].scrollIntoView({ behavior: "smooth" });
+  }
+
+  setupKeyboardNav() {
+    document.addEventListener("keydown", e => {
+      if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); this.goTo(this.currentSlide + 1); }
+      if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); this.goTo(this.currentSlide - 1); }
+      if (e.key === "Home") { e.preventDefault(); this.goTo(0); }
+      if (e.key === "End") { e.preventDefault(); this.goTo(this.slides.length - 1); }
+    });
+  }
+
+  setupWheelNav() {
+    // One slide per wheel gesture, so trackpads don't skip several slides.
+    let locked = false;
+    window.addEventListener("wheel", e => {
+      e.preventDefault();
+      if (locked || Math.abs(e.deltaY) < 8) return;
+      locked = true;
+      this.goTo(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+      setTimeout(() => (locked = false), 800);
+    }, { passive: false });
+  }
+
+  setupTouchNav() {
+    // Native scroll-snap handles swipes; nothing extra needed.
+  }
+
+  setupNavDots() {
+    this.navDotsContainer.innerHTML = "";
+    this.slides.forEach((_, i) => {
+      const b = document.createElement("button");
+      b.setAttribute("aria-label", "Go to slide " + (i + 1));
+      b.addEventListener("click", () => this.goTo(i));
+      this.navDotsContainer.appendChild(b);
+    });
+  }
+
+  updateProgress() {
+    const pct = this.slides.length > 1 ? (this.currentSlide / (this.slides.length - 1)) * 100 : 100;
+    this.progressBar.style.width = pct + "%";
+    this.navDotsContainer.querySelectorAll("button").forEach((b, i) => b.classList.toggle("active", i === this.currentSlide));
+  }
+}
+
+new SlidePresentation();
+</script>
+</body>
+</html>
